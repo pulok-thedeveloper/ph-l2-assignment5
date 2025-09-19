@@ -5,8 +5,8 @@ import bcryptjs from "bcryptjs";
 
 export const seedAdmin = async () => {
   try {
-    const isSuperAdmin = await User.findOne({ role: Role.ADMIN });
-    if (isSuperAdmin) {
+    const isAdmin = await User.findOne({ role: Role.ADMIN });
+    if (isAdmin) {
       console.log("Admin already exist");
       return;
     }
@@ -29,9 +29,9 @@ export const seedAdmin = async () => {
       auths: [authProvider]
     };
 
-    const superAdmin = await User.create(payload);
+    const admin = await User.create(payload);
 
-    console.log("Admin Created Successfully!", superAdmin);
+    console.log("Admin Created Successfully!", admin);
   } catch (error) {
     console.log(error);
   }
