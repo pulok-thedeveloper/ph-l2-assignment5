@@ -30,6 +30,7 @@ const suspendDriver = async (driverId: string) => {
   if (driver.driverProfile) {
     driver.driverProfile.isOnline = false;
     driver.driverProfile.isSuspended = true;
+    driver.driverProfile.isApproved = false;
   }
 
   await driver.save();

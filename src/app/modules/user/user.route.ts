@@ -20,10 +20,12 @@ router.patch(
   UserController.updateUser
 );
 
-router.get(
-  "/all-users",
-  checkAuth(Role.ADMIN, Role.ADMIN),
-  UserController.getAllUsers
+router.get("/all-users", checkAuth(Role.ADMIN), UserController.getAllUsers);
+
+router.patch(
+  "/block/:id",
+  checkAuth(Role.ADMIN),
+  UserController.blockOrUnblockUser
 );
 
 export const UserRoutes = router;

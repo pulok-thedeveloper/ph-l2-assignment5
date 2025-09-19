@@ -45,9 +45,12 @@ const createUser = async (payload: Partial<IUser>) => {
   return user;
 };
 
-const getAllUsers = async () => {
-  const users = await User.find({}).select("-password");
-  const totalUsers = await User.countDocuments();
+const getAllUsers = async (role?: string) => {
+  const filter = role ? { role } : {};
+
+  const users = await User.find(filter).select("-password");
+  const totalUsers = await User.countDocuments(filter);
+
   return {
     data: users,
     meta: {
@@ -94,8 +97,27 @@ const updateUser = async (
   return updatedUser;
 };
 
+export const blockOrUnblockUser = async (
+  userId: string,
+  payload: Partial<IUser>
+) => {
+  const isActive = payload.isActive;
+  const user = await User.findByIdAndUpdate(
+    userId,
+    { isActive },
+    { new: true }
+  ).select("-password");
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not found");
+  }
+
+  return user;
+};
+
 export const UserServices = {
   createUser,
   getAllUsers,
   updateUser,
+  blockOrUnblockUser,
 };
