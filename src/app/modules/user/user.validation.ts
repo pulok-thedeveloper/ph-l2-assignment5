@@ -1,7 +1,6 @@
 import z from "zod/v3";
 import { IsActive, Role } from "./user.interface";
 
-
 export const createUserZodSchema = z.object({
   name: z
     .string({ invalid_type_error: "Name must be string" })
@@ -32,8 +31,8 @@ export const createUserZodSchema = z.object({
     .string({ invalid_type_error: "Address must be string" })
     .max(200, { message: "Address cannot exceed 200 characters" })
     .optional(),
+  role: z.enum([Role.RIDER, Role.DRIVER]).default(Role.RIDER),
 });
-
 
 export const updateUserZodSchema = z.object({
   name: z

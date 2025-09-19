@@ -7,7 +7,7 @@ import { envVars } from "../../config/env";
 import { JwtPayload } from "jsonwebtoken";
 
 const createUser = async (payload: Partial<IUser>) => {
-  const { email, password, ...rest } = payload;
+  const { email, password, role, ...rest } = payload;
 
   const isUserExist = await User.findOne({ email });
 
@@ -22,18 +22,31 @@ const createUser = async (payload: Partial<IUser>) => {
     providerId: email as string,
   };
 
-  const user = await User.create({
+  const userData = {
     email,
     password: hashedPassword,
     auths: [authProvider],
+    role,
     ...rest,
-  });
+  };
+
+  if (role === Role.DRIVER) {
+    userData.driverProfile = {
+      isApproved: false,
+      isSuspended: false,
+      isOnline: false,
+      earnings: 0,
+      currentRide: null,
+    };
+  }
+
+  const user = await User.create(userData);
 
   return user;
 };
 
 const getAllUsers = async () => {
-  const users = await User.find({});
+  const users = await User.find({}).select("-password");
   const totalUsers = await User.countDocuments();
   return {
     data: users,
