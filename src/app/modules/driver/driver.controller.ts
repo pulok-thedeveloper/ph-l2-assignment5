@@ -34,74 +34,35 @@ const suspendDriver = catchAsync(
   }
 );
 
-// const setAvailability = catchAsync(
-//   async (req: Request, res: Response, next: NextFunction) => {
-//     const driverId = req.user.userId;
-//     const { isOnline } = req.body;
+const setAvailability = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const driverId = req.user.userId;
 
-//     const driver = await User.findById(driverId);
-//     if (!driver || driver.role !== "DRIVER") {
-//       return res
-//         .status(httpStatus.FORBIDDEN)
-//         .json({ message: "Only drivers allowed" });
-//     }
+    const driver = await DriverServices.setAvailability(driverId, req.body);
 
-//     if (!driver.driverProfile) {
-//       return res
-//         .status(httpStatus.BAD_REQUEST)
-//         .json({ message: "Driver profile missing" });
-//     }
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: `Driver is now ${req.body.isOnline ? "online" : "offline"}`,
+      data: driver,
+    });
+  }
+);
 
-//     if (driver.driverProfile.isSuspended) {
-//       return res
-//         .status(httpStatus.FORBIDDEN)
-//         .json({ message: "Suspended drivers cannot change availability" });
-//     }
+const getEarnings = catchAsync(async (req: Request, res: Response) => {
+  const driverId = req.user.userId; // assuming auth middleware sets this
+  const result = await DriverServices.getEarnings(driverId);
 
-//     driver.driverProfile.isOnline = isOnline;
-//     await driver.save();
-
-//     sendResponse(res, {
-//       statusCode: httpStatus.OK,
-//       success: true,
-//       message: `Driver is now ${isOnline ? "online" : "offline"}`,
-//       data: { isOnline: driver.driverProfile.isOnline },
-//     });
-//   }
-// );
-
-// const getEarnings = catchAsync(
-//   async (req: Request, res: Response, next: NextFunction) => {
-//     const driverId = req.user._id;
-//     const driver = await User.findById(driverId).select("driverProfile");
-
-//     if (!driver || driver.role !== "DRIVER") {
-//       return res
-//         .status(httpStatus.FORBIDDEN)
-//         .json({ message: "Only drivers allowed" });
-//     }
-
-//     const profile = driver.driverProfile;
-//     if (!profile) {
-//       return res
-//         .status(httpStatus.BAD_REQUEST)
-//         .json({ message: "Driver profile missing" });
-//     }
-
-//     sendResponse(res, {
-//       statusCode: httpStatus.OK,
-//       success: true,
-//       message: "Earnings fetched successfully",
-//       data: {
-//         earnings: profile.earnings,
-//         currentRide: profile.currentRide,
-//         isOnline: profile.isOnline,
-//       },
-//     });
-//   }
-// );
+  res.status(200).json({
+    success: true,
+    message: "Earnings retrieved successfully",
+    data: result,
+  });
+});
 
 export const DriverController = {
   approveDriver,
   suspendDriver,
+  setAvailability,
+  getEarnings,
 };

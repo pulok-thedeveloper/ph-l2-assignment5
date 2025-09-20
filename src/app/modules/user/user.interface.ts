@@ -17,11 +17,16 @@ export enum IsActive {
   BLOCKED = "BLOCKED",
 }
 
+export interface IEarnings {
+  ride: Types.ObjectId;
+  earning: number;
+}
+
 export interface IDriverProfile {
   isApproved: boolean;
   isSuspended: boolean;
   isOnline: boolean;
-  earnings: number;
+  earnings: IEarnings[];
   currentRide?: Types.ObjectId | null;
 }
 

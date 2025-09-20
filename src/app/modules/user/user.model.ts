@@ -2,6 +2,7 @@ import { model, Schema } from "mongoose";
 import {
   IAuthProvider,
   IDriverProfile,
+  IEarnings,
   IsActive,
   IUser,
   Role,
@@ -19,12 +20,24 @@ const AuthProviderSchema = new Schema<IAuthProvider>(
   { _id: false, versionKey: false }
 );
 
+const EarningSchema = new Schema<IEarnings>(
+  {
+    ride: {
+      type: Schema.Types.ObjectId,
+      required: true,
+      ref: "Ride",
+    },
+    earning: { type: Number, required: true },
+  },
+  { _id: false, versionKey: false }
+);
+
 const DriverProfileSchema = new Schema<IDriverProfile>(
   {
     isApproved: { type: Boolean, default: false },
     isSuspended: { type: Boolean, default: false },
     isOnline: { type: Boolean, default: false },
-    earnings: { type: Number, default: 0 },
+    earnings: { type: [EarningSchema], default: [] },
     currentRide: { type: Schema.Types.ObjectId, ref: "Ride", default: null },
   },
   { _id: false, versionKey: false }

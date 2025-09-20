@@ -32,8 +32,11 @@ const cancelRide = async (rideId: string, userId: Types.ObjectId) => {
   const ride = await Ride.findById(rideId);
   if (!ride) throw new AppError(httpStatus.NOT_FOUND, "Ride not found");
 
-  if ([RideStatus.COMPLETED, RideStatus.CANCELLED].includes(ride.status)) {
-    throw new AppError(httpStatus.BAD_REQUEST, "Ride cannot be cancelled");
+  if (ride.status !== RideStatus.REQUESTED) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "Ride cannot be cancelled after it has been accepted"
+    );
   }
 
   if (!ride.rider.equals(userId)) {
@@ -46,8 +49,10 @@ const cancelRide = async (rideId: string, userId: Types.ObjectId) => {
   ride.status = RideStatus.CANCELLED;
   ride.cancelledAt = new Date();
   await ride.save();
+
   return ride;
 };
+
 
 // Get rides for current user
 const getMyRides = async (userId: Types.ObjectId, role: string) => {
@@ -170,7 +175,10 @@ const updateRideStatus = async (
       break;
     case RideStatus.COMPLETED:
       ride.completedAt = new Date();
-      profile.earnings += ride.fareTk;
+      profile.earnings.push({
+        ride: ride._id,
+        earning: ride.fareTk,
+      });
       profile.currentRide = null;
       break;
   }
