@@ -38,11 +38,4 @@ const RideSchema = new Schema<IRide>(
   { timestamps: true }
 );
 
-RideSchema.pre("save", function (next) {
-  if (this.isModified("distanceKm") || this.isNew) {
-    this.fareTk = this.distanceKm * 20; // 20tk per km
-  }
-  next();
-});
-
 export const Ride = model<IRide>("Ride", RideSchema);

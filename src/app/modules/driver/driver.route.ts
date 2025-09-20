@@ -12,4 +12,16 @@ router.patch(
   DriverController.suspendDriver
 );
 
+router.patch(
+  "/availability",
+  checkAuth("DRIVER"),
+  DriverController.setAvailability
+);
+
+router.get(
+  "/earnings",
+  checkAuth("DRIVER"),
+  DriverController.getEarnings
+);
+
 export const DriverRoutes = router;
