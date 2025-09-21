@@ -46,4 +46,11 @@ router.post(
   RideController.updateRideStatus
 );
 
+// Rider Ratings and feedback (Rider)
+router.post(
+  "/feedback",
+  checkAuth(Role.RIDER),
+  RideController.addRideFeedback
+);
+
 export const RideRoutes = router;

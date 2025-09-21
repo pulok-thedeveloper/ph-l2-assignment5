@@ -60,7 +60,9 @@ export const getAvailableRequestedRides = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const driverId = req.user.userId;
 
-    const availableRides = await RideServices.getAvailableRequestedRides(driverId);
+    const availableRides = await RideServices.getAvailableRequestedRides(
+      driverId
+    );
 
     sendResponse(res, {
       statusCode: httpStatus.OK,
@@ -104,6 +106,24 @@ export const updateRideStatus = catchAsync(
   }
 );
 
+const addRideFeedback = async (req: Request, res: Response) => {
+  const riderId = req.user._id;
+  const { rideId, rating, feedback } = req.body;
+
+  const updatedRide = await RideServices.addRideFeedback(
+    rideId,
+    riderId,
+    rating,
+    feedback
+  );
+
+  res.status(200).json({
+    success: true,
+    message: "Feedback submitted successfully",
+    data: updatedRide,
+  });
+};
+
 export const RideController = {
   requestRide,
   cancelRide,
@@ -111,4 +131,5 @@ export const RideController = {
   getMyRides,
   getAvailableRequestedRides,
   updateRideStatus,
+  addRideFeedback,
 };

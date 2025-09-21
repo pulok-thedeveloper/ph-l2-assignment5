@@ -190,6 +190,43 @@ const updateRideStatus = async (
   return ride;
 };
 
+
+const addRideFeedback = async (
+  rideId: string,
+  riderId: Types.ObjectId,
+  rating: number,
+  feedback?: string
+) => {
+  const ride = await Ride.findById(rideId);
+  if (!ride) throw new AppError(httpStatus.NOT_FOUND, "Ride not found");
+  if (!ride.driver)
+    throw new AppError(httpStatus.BAD_REQUEST, "No driver assigned");
+  if (!ride.rider.equals(riderId))
+    throw new AppError(httpStatus.FORBIDDEN, "Not your ride");
+  if (ride.rating)
+    throw new AppError(httpStatus.BAD_REQUEST, "Feedback already submitted");
+
+  // Save feedback in ride
+  ride.rating = rating;
+  ride.feedback = feedback as string;
+  await ride.save();
+
+  // Update driver's global rating
+  const driver = await User.findById(ride.driver);
+  if (driver?.driverProfile) {
+    const dp = driver.driverProfile;
+    const newCount = (dp.ratingCount || 0) + 1;
+    const newRating =
+      ((dp.rating || 0) * (dp.ratingCount || 0) + rating) / newCount;
+
+    dp.rating = newRating;
+    dp.ratingCount = newCount;
+    await driver.save();
+  }
+
+  return ride;
+};
+
 export const RideServices = {
   requestRide,
   cancelRide,
@@ -197,4 +234,5 @@ export const RideServices = {
   getMyRides,
   getAvailableRequestedRides,
   updateRideStatus,
+  addRideFeedback
 };

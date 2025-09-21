@@ -37,6 +37,8 @@ const createUser = async (payload: Partial<IUser>) => {
       isOnline: false,
       earnings: [],
       currentRide: null,
+      rating: 0,
+      ratingCount: 0,
     };
   }
 

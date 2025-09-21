@@ -34,8 +34,11 @@ const RideSchema = new Schema<IRide>(
     pickedUpAt: { type: Date },
     completedAt: { type: Date },
     cancelledAt: { type: Date },
+
+    rating: { type: Number, min: 1, max: 5 },
+    feedback: { type: String },
   },
-  { timestamps: true }
+  { timestamps: true, versionKey: false }
 );
 
 export const Ride = model<IRide>("Ride", RideSchema);

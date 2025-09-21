@@ -28,6 +28,8 @@ export interface IDriverProfile {
   isOnline: boolean;
   earnings: IEarnings[];
   currentRide?: Types.ObjectId | null;
+  rating: number;
+  ratingCount: number;
 }
 
 export interface IUser {

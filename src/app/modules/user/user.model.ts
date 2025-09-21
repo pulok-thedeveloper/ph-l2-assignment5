@@ -39,6 +39,8 @@ const DriverProfileSchema = new Schema<IDriverProfile>(
     isOnline: { type: Boolean, default: false },
     earnings: { type: [EarningSchema], default: [] },
     currentRide: { type: Schema.Types.ObjectId, ref: "Ride", default: null },
+    rating: { type: Number, default: 0 },
+    ratingCount: { type: Number, default: 0 },
   },
   { _id: false, versionKey: false }
 );

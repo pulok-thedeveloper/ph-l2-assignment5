@@ -30,4 +30,6 @@ export interface IRide {
   pickedUpAt?: Date;
   completedAt?: Date;
   cancelledAt?: Date;
+  rating?: number;
+  feedback?: string;
 }
