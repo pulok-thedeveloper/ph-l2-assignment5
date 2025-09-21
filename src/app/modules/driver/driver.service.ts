@@ -78,8 +78,6 @@ const getEarnings = async (driverId: string) => {
     throw new AppError(httpStatus.NOT_FOUND, "Driver not found");
   }
 
-  console.log("driver", driver)
-
   const result = await User.aggregate([
     { $match: { _id: objectId } },
 
