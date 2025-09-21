@@ -7,7 +7,24 @@ import cookieParser from "cookie-parser";
 
 const app = express();
 
-app.use(cors());
+
+const allowedOrigins = [
+  "http://localhost:5173", // dev
+  "https://ride-sharing-app-backend.vercel.app/", // production
+];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use(cookieParser());
 
