@@ -53,9 +53,10 @@ const getEarnings = catchAsync(async (req: Request, res: Response) => {
   const driverId = req.user.userId; // assuming auth middleware sets this
   const result = await DriverServices.getEarnings(driverId);
 
-  res.status(200).json({
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
     success: true,
-    message: "Earnings retrieved successfully",
+    message: `Earnings retrieved successfully`,
     data: result,
   });
 });

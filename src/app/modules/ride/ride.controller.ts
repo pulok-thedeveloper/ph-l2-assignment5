@@ -107,8 +107,9 @@ export const updateRideStatus = catchAsync(
 );
 
 const addRideFeedback = async (req: Request, res: Response) => {
-  const riderId = req.user._id;
-  const { rideId, rating, feedback } = req.body;
+  const riderId = req.user.userId;
+  const rideId = req.params.id as string;
+  const { rating, feedback } = req.body;
 
   const updatedRide = await RideServices.addRideFeedback(
     rideId,
@@ -117,10 +118,22 @@ const addRideFeedback = async (req: Request, res: Response) => {
     feedback
   );
 
-  res.status(200).json({
+  sendResponse(res, {
+    statusCode: httpStatus.CREATED,
     success: true,
-    message: "Feedback submitted successfully",
+    message: `Feedback submitted successfully`,
     data: updatedRide,
+  });
+};
+
+const getAdminAnalytics = async (req: Request, res: Response) => {
+  const data = await RideServices.getAdminAnalytics();
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: `Admin analytics fetched successfully`,
+    data: data,
   });
 };
 
@@ -132,4 +145,5 @@ export const RideController = {
   getAvailableRequestedRides,
   updateRideStatus,
   addRideFeedback,
+  getAdminAnalytics,
 };

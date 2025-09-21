@@ -4,6 +4,7 @@ import { IRide, RideStatus } from "./ride.interface";
 import { Types } from "mongoose";
 import AppError from "../../helpers/AppError";
 import { User } from "../user/user.model";
+import { Role } from "../user/user.interface";
 
 // Request ride
 const requestRide = async (payload: Partial<IRide>): Promise<IRide> => {
@@ -227,6 +228,62 @@ const addRideFeedback = async (
   return ride;
 };
 
+// Admin Analytics (Admin)
+const getAdminAnalytics = async () => {
+  const totalRiders = await User.countDocuments({ role: Role.RIDER });
+  const totalDrivers = await User.countDocuments({ role: Role.DRIVER });
+  const activeDrivers = await User.countDocuments({
+    role: Role.DRIVER,
+    "driverProfile.isApproved": true,
+    "driverProfile.isOnline": true,
+    "driverProfile.isSuspended": false,
+  });
+  const suspendedDrivers = await User.countDocuments({
+    role: Role.DRIVER,
+    "driverProfile.isSuspended": true,
+  });
+
+  // Ride stats
+  const totalRides = await Ride.countDocuments();
+  const completedRides = await Ride.countDocuments({
+    status: RideStatus.COMPLETED,
+  });
+  const cancelledRides = await Ride.countDocuments({
+    status: RideStatus.CANCELLED,
+  });
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const todaysRides = await Ride.countDocuments({
+    requestedAt: { $gte: today },
+  });
+
+  const totalEarningsAgg = await Ride.aggregate([
+    { $match: { status: RideStatus.COMPLETED } },
+    { $group: { _id: null, total: { $sum: "$fareTk" } } },
+  ]);
+  const totalEarnings = totalEarningsAgg[0]?.total || 0;
+
+
+  return {
+    users: {
+      totalRiders,
+      totalDrivers,
+      activeDrivers,
+      suspendedDrivers,
+    },
+    rides: {
+      totalRides,
+      completedRides,
+      cancelledRides,
+      todaysRides,
+    },
+    earnings: {
+      totalEarnings
+    },
+  };
+};
+
 export const RideServices = {
   requestRide,
   cancelRide,
@@ -234,5 +291,6 @@ export const RideServices = {
   getMyRides,
   getAvailableRequestedRides,
   updateRideStatus,
-  addRideFeedback
+  addRideFeedback,
+  getAdminAnalytics,
 };

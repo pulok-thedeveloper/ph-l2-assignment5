@@ -31,6 +31,14 @@ router.get(
   RideController.getAvailableRequestedRides
 );
 
+// Rider Ratings and feedback (Rider)
+router.post(
+  "/feedback/:id",
+  checkAuth(Role.RIDER),
+  RideController.addRideFeedback
+);
+
+
 // Get ride by ID
 router.get(
   "/:id",
@@ -45,12 +53,4 @@ router.post(
   validateRequest(updateRideStatusZodSchema),
   RideController.updateRideStatus
 );
-
-// Rider Ratings and feedback (Rider)
-router.post(
-  "/feedback",
-  checkAuth(Role.RIDER),
-  RideController.addRideFeedback
-);
-
 export const RideRoutes = router;
