@@ -6,6 +6,7 @@ import { RideRoutes } from "../modules/ride/ride.route";
 import { checkAuth } from "../middlewares/checkAuth";
 import { RideController } from "../modules/ride/ride.controller";
 import { Role } from "../modules/user/user.interface";
+import { OtpRoutes } from "../modules/otp/otp.route";
 
 export const router = Router();
 
@@ -25,6 +26,10 @@ const moduleRoutes = [
   {
     path: "/ride",
     route: RideRoutes,
+  },
+  {
+    path: "/otp",
+    route: OtpRoutes,
   },
 ];
 

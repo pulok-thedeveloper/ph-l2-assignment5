@@ -41,6 +41,7 @@ export interface IUser {
   picture?: string;
   isDeleted?: boolean;
   isActive?: IsActive;
+  isVerified?: boolean;
   role: Role;
   auths: IAuthProvider[];
   driverProfile?: IDriverProfile | null;

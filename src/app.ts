@@ -1,12 +1,29 @@
 import express, { Request, Response } from "express";
+import expressSession from "express-session";
 import cors from "cors";
 import { router } from "./app/routes";
 import { globalErrorHandler } from "./app/middlewares/globalErrorHandler";
 import { notFound } from "./app/middlewares/notFound";
 import cookieParser from "cookie-parser";
+import { envVars } from "./app/config/env";
+import passport from "passport";
+import "./app/config/passport";
 
 const app = express();
+app.use(
+  expressSession({
+    secret: envVars.EXPRESS_SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+app.use(passport.initialize());
+app.use(passport.session());
 
+app.use(express.json());
+app.use(cookieParser());
+app.set("trust proxy", 1);
+app.use(express.urlencoded({ extended: true }));
 
 const allowedOrigins = [
   "http://localhost:5173", // dev
@@ -25,8 +42,6 @@ app.use(
     credentials: true,
   })
 );
-app.use(express.json());
-app.use(cookieParser());
 
 
 app.use("/api/v1", router);

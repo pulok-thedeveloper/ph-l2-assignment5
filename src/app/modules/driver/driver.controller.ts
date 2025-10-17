@@ -4,7 +4,6 @@ import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
 import httpStatus from "http-status-codes";
 import { DriverServices } from "./driver.service";
-import { User } from "../user/user.model";
 
 const approveDriver = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {

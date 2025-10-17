@@ -20,6 +20,7 @@ router.patch(
   UserController.updateUser
 );
 
+router.get("/me", checkAuth(...Object.values(Role)), UserController.getMe);
 router.get("/all-users", checkAuth(Role.ADMIN), UserController.getAllUsers);
 
 router.patch(
