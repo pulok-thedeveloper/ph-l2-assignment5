@@ -4,14 +4,15 @@ import httpStatus from "http-status-codes";
 import { RideServices } from "./ride.service";
 import { sendResponse } from "../../utils/sendResponse";
 import { catchAsync } from "../../utils/catchAsync";
+import { JwtPayload } from "jsonwebtoken";
 
 // Rider requests a ride
 export const requestRide = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const riderId = req.user.userId;
+    const decodeToken = req.user as JwtPayload;
     const ride = await RideServices.requestRide({
       ...req.body,
-      rider: riderId,
+      rider: decodeToken.userId,
     });
 
     sendResponse(res, {
@@ -26,10 +27,10 @@ export const requestRide = catchAsync(
 // Rider or Driver cancels a ride
 export const cancelRide = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const userId = req.user.userId;
+    const decodeToken = req.user as JwtPayload;
     const rideId = req.params.id as string;
 
-    const ride = await RideServices.cancelRide(rideId, userId);
+    const ride = await RideServices.cancelRide(rideId, decodeToken.userId);
     sendResponse(res, {
       statusCode: httpStatus.OK,
       success: true,
@@ -42,10 +43,9 @@ export const cancelRide = catchAsync(
 // Get my rides (rider/driver)
 export const getMyRides = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const userId = req.user.userId;
-    const role = req.user.role;
+    const decodeToken = req.user as JwtPayload;
 
-    const rides = await RideServices.getMyRides(userId, role);
+    const rides = await RideServices.getMyRides(decodeToken.userId, decodeToken.role);
     sendResponse(res, {
       statusCode: httpStatus.OK,
       success: true,
@@ -58,10 +58,10 @@ export const getMyRides = catchAsync(
 // Available Requested Rides (driver)
 export const getAvailableRequestedRides = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const driverId = req.user.userId;
+    const decodeToken = req.user as JwtPayload;
 
     const availableRides = await RideServices.getAvailableRequestedRides(
-      driverId
+      decodeToken.userId
     );
 
     sendResponse(res, {
@@ -91,11 +91,15 @@ export const getRideById = catchAsync(
 // Dynamic ride status update (driver)
 export const updateRideStatus = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const driverId = req.user.userId;
+    const decodeToken = req.user as JwtPayload;
     const id = req.params.id as string;
     const { status } = req.body;
 
-    const ride = await RideServices.updateRideStatus(id, driverId, status);
+    const ride = await RideServices.updateRideStatus(
+      id,
+      decodeToken.userId,
+      status
+    );
 
     sendResponse(res, {
       statusCode: httpStatus.OK,
@@ -107,13 +111,13 @@ export const updateRideStatus = catchAsync(
 );
 
 const addRideFeedback = async (req: Request, res: Response) => {
-  const riderId = req.user.userId;
+  const decodeToken = req.user as JwtPayload;
   const rideId = req.params.id as string;
   const { rating, feedback } = req.body;
 
   const updatedRide = await RideServices.addRideFeedback(
     rideId,
-    riderId,
+    decodeToken.userId,
     rating,
     feedback
   );

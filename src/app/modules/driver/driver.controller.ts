@@ -4,6 +4,7 @@ import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
 import httpStatus from "http-status-codes";
 import { DriverServices } from "./driver.service";
+import { JwtPayload } from "jsonwebtoken";
 
 const approveDriver = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -35,9 +36,12 @@ const suspendDriver = catchAsync(
 
 const setAvailability = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const driverId = req.user.userId;
+    const driverId = req.params.id;
 
-    const driver = await DriverServices.setAvailability(driverId, req.body);
+    const driver = await DriverServices.setAvailability(
+      driverId as string,
+      req.body
+    );
 
     sendResponse(res, {
       statusCode: httpStatus.OK,
@@ -49,8 +53,8 @@ const setAvailability = catchAsync(
 );
 
 const getEarnings = catchAsync(async (req: Request, res: Response) => {
-  const driverId = req.user.userId; // assuming auth middleware sets this
-  const result = await DriverServices.getEarnings(driverId);
+  const decodeToken = req.user as JwtPayload;
+  const result = await DriverServices.getEarnings(decodeToken.userId);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
