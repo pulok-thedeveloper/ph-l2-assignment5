@@ -27,7 +27,7 @@ app.use(express.urlencoded({ extended: true }));
 
 const allowedOrigins = [
   "http://localhost:5173", // dev
-  "https://ride-sharing-app-frontend-orcin.vercel.app/", // production
+  "https://ride-sharing-app-frontend-orcin.vercel.app", // production
 ];
 
 app.use(
