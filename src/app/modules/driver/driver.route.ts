@@ -13,7 +13,7 @@ router.patch(
 );
 
 router.patch(
-  "/availability",
+  "/availability/:id",
   checkAuth("DRIVER"),
   DriverController.setAvailability
 );
